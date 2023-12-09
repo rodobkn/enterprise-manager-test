@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum EnterpriseType {
+  TECH
+  TRANSPORT
+  FOOD
+  PHARMACY
+}
+
+model Enterprise {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String         @unique
+  type        EnterpriseType
+  description String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  expenses    Expense[]
+}
+
+model Expense {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  amount       Int
+  enterpriseId String     @db.ObjectId
+  enterprise   Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
